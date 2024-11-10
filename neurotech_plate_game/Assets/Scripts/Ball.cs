@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.ReorderableList;
 using UnityEngine;
+using UnityEngine.SceneManagement; 
+
 
 /// <summary>
 /// A ball that bounces off of the player block in a direction that changes based off where the 
@@ -18,6 +20,8 @@ public class Ball : MonoBehaviour
     private Vector3 position;
     private float angle;
     private bool paused; // When we implement pausing this should be used
+    [SerializeField] private GameObject gameOverUI; // UI panel for "You Lose"
+
     #endregion
 
     #region Methods
@@ -27,6 +31,8 @@ public class Ball : MonoBehaviour
         paused = false;
         Invoke(nameof(SetRandomTrajectory), 1f);
         position = transform.position;
+        gameOverUI.SetActive(false); // Ensure the "You Lose" UI is hidden at the start
+
     }
 
     void Update()
@@ -42,6 +48,11 @@ public class Ball : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.name == "South Wall")
+        {
+            GameOver();
+        }
+
         if (collision.gameObject != player)
         {
             // Check which direction the ball hit from
@@ -68,6 +79,12 @@ public class Ball : MonoBehaviour
                 direction.x *= -1;
             }
         }
+    }
+
+    private void GameOver()
+    {
+        paused = true;
+        gameOverUI.SetActive(true); 
     }
     #endregion
 
@@ -108,7 +125,19 @@ public class Ball : MonoBehaviour
             angle = Mathf.Acos(dist);
             direction = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle));
         }
+
+        // Ensure the ball always moves upward
+        if (direction.y < 0)
+        {
+            direction.y = Mathf.Abs(direction.y);
+        }
+    }
+
+    public void RetryGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Reloads the current scene
     }
     #endregion
-    #endregion
+
+#endregion
 }

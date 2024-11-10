@@ -21,6 +21,7 @@ public class Move : MonoBehaviour
     #region Internal Methods
     private void Update()
     {
+
         if (holdMoveRight)
         {
             gameObject.transform.position += new Vector3(speed * Time.deltaTime, 0);
@@ -30,6 +31,17 @@ public class Move : MonoBehaviour
         {
             gameObject.transform.position += new Vector3(-speed * Time.deltaTime, 0);
         }
+
+        if (gameObject.transform.position.x <= -10.4f)
+        {
+            gameObject.transform.position = new Vector3(-10.4f, gameObject.transform.position.y);
+        }
+
+        if (gameObject.transform.position.x >= 10.4f)
+        {
+            gameObject.transform.position = new Vector3(10.4f, gameObject.transform.position.y);
+        }
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
